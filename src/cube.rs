@@ -98,12 +98,12 @@ impl Face {
     }
 }
 
-struct Cube {
+pub struct Cube {
     state : [Color; 54],
 }
 
 impl Cube {
-    fn new () -> Self {
+    pub fn new () -> Self {
         Self::solved()
     }
 
@@ -119,7 +119,44 @@ impl Cube {
         Cube { state }
     }
 
-    fn from_file( path : &std::path::Path ) -> Result<Cube, Box<dyn Error>> {
+    pub fn show(&self) {
+        let c = |i: usize| match self.state[i] {
+            Color::Red    => 'R',
+            Color::Orange => 'O',
+            Color::Green  => 'G',
+            Color::Blue   => 'B',
+            Color::White  => 'W',
+            Color::Yellow => 'Y',
+        };
+
+        // offsets
+        let f = Face::Front.offset();
+        let ba = Face::Back.offset();
+        let l = Face::Left.offset();
+        let r = Face::Right.offset();
+        let t = Face::Top.offset();
+        let bo = Face::Bottom.offset();
+
+        println!("        Top");
+        for row in 0..3 {
+            println!("        {} {} {}", c(t + row*3), c(t + row*3+1), c(t + row*3+2));
+        }
+        println!("Left  Front  Right  Back");
+        for row in 0..3 {
+            println!("{} {} {}  {} {} {}  {} {} {}  {} {} {}",
+                c(l + row*3), c(l + row*3+1), c(l + row*3+2),
+                c(f + row*3), c(f + row*3+1), c(f + row*3+2),
+                c(r + row*3), c(r + row*3+1), c(r + row*3+2),
+                c(ba+ row*3), c(ba+ row*3+1), c(ba+ row*3+2),
+            );
+        }
+        println!("        Bottom");
+        for row in 0..3 {
+            println!("        {} {} {}", c(bo + row*3), c(bo + row*3+1), c(bo + row*3+2));
+        }
+    }
+
+    pub fn from_file( path : &std::path::Path ) -> Result<Cube, Box<dyn Error>> {
        let json_str: String = std::fs::read_to_string(path)?;
        let parse: HashMap<String, Vec<String>> = serde_json::from_str(&json_str)?;
        let mut state: [Color; 54] = [Color::White; 54];
