@@ -3,8 +3,8 @@
 use std::error::Error;
 use std::collections::HashMap;
 
-#[derive(Eq, PartialEq, Copy, Clone)]
-enum Color {
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub enum Color {
     Red,
     Green,
     Yellow,
@@ -21,7 +21,7 @@ impl Color {
                                 Self::Orange,
                                 Self::White ];
 
-    fn from_str(str : &str) -> Result<Color, Box<dyn Error>>{
+    pub fn from_str(str : &str) -> Result<Color, Box<dyn Error>>{
         match str {
             "Red" => Ok(Self::Red) ,
             "Green" => Ok(Self::Green),
@@ -45,8 +45,8 @@ impl Color {
  */
 
 
-#[derive(Eq, PartialEq, Copy, Clone)]
-enum Face {
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub enum Face {
     Front,
     Back,
     Top,
@@ -63,7 +63,7 @@ impl Face {
                                 Self::Left,
                                 Self::Right ];
 
-    fn offset(self) -> usize {
+    pub fn offset(self) -> usize {
         match self {
             Self::Front  => 0,
             Self::Back   => 9,
@@ -74,7 +74,7 @@ impl Face {
         }
     }
 
-    fn color(self) -> Color {
+    pub fn color(self) -> Color {
         match self {
             Self::Front  => Color::Red,
             Self::Back   => Color::Orange,
@@ -85,7 +85,7 @@ impl Face {
         }
     }
 
-    fn from_str(str : &str) -> Result<Face, Box<dyn Error>>{
+    pub fn from_str(str : &str) -> Result<Face, Box<dyn Error>>{
         match str {
             "Front" => Ok(Self::Front) ,
             "Back" => Ok(Self::Back),
@@ -98,6 +98,7 @@ impl Face {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Cube {
     state : [Color; 54],
 }
@@ -107,7 +108,11 @@ impl Cube {
         Self::solved()
     }
 
-    fn solved() -> Cube {
+    pub(crate) fn state_mut(&mut self) -> &mut [Color; 54] {
+        &mut self.state
+    }
+
+    pub fn solved() -> Cube {
         let mut state = [Color::White; 54];
         for face in Face::VALUES.iter() {
             let offset = face.offset();
